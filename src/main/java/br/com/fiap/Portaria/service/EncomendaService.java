@@ -26,6 +26,7 @@ public class EncomendaService {
         return encomendaRepository.save(encomenda);
     }
 
+    //Já ultilizei no trabalho, não foi gpt
     public Encomenda atualizar(Long id, Encomenda encomendaAtualizada) {
         return encomendaRepository.findById(id)
                 .map(encomenda -> {

@@ -17,7 +17,7 @@ public class Encomenda {
     private String status;
 
     @OneToOne
-    @JoinColumn(name = "TLP_MORADOR_ID_MORADOR")
+    @JoinColumn(name = "TPL_MORADOR_ID_MORADOR")
     private Morador morador;
 
     @OneToOne
