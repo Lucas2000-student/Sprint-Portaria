@@ -63,7 +63,7 @@ Para rodar os testes automatizados:
 
 ## Vídeo de Apresentação
 
-[Assista aqui](COLE_O_LINK_DO_VIDEO_AQUI)
+[Assista aqui](https://youtu.be/DnbmD0YmciU)
 
 ## Licença
 
