@@ -1,18 +1,16 @@
 package br.com.fiap.Portaria.dto;
 
 public class MoradorRequestDTO {
-
     private String nome;
-    private Integer bloco;
     private String contato;
-    private Long idApartamento;
+    private Integer apartamentoId;
 
-    public Integer getBloco() {
-        return bloco;
+    public String getNome() {
+        return nome;
     }
 
-    public void setBloco(Integer bloco) {
-        this.bloco = bloco;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getContato() {
@@ -23,19 +21,11 @@ public class MoradorRequestDTO {
         this.contato = contato;
     }
 
-    public String getNome() {
-        return nome;
+    public Integer getApartamentoId() {
+        return apartamentoId;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Long getIdApartamento() {
-        return idApartamento;
-    }
-
-    public void setIdApartamento(Long idApartamento) {
-        this.idApartamento = idApartamento;
+    public void setApartamentoId(Integer apartamentoId) {
+        this.apartamentoId = apartamentoId;
     }
 }

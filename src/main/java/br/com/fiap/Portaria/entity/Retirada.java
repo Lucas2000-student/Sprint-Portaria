@@ -9,22 +9,25 @@ import java.util.Date;
 public class Retirada {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idRetirada;
+    private Integer idRetirada;
 
     private Date dataRetirada;
     private String tokenRetirada;
 
-    @OneToOne
-    @JoinColumn(name = "RETIRADA_MORDADOR_FK")
+    @ManyToOne
+    @JoinColumn(name = "ID_MORADOR")
     private Morador morador;
 
-    @OneToOne
-    @JoinColumn(name = "RETIRADA_PORTARIA_FK")
+    @ManyToOne
+    @JoinColumn(name = "ID_PORTARIA")
     private Portaria portaria;
 
-    public Long getIdRetirada() {
+    public Integer getIdRetirada() {
         return idRetirada;
+    }
+
+    public void setIdRetirada(Integer idRetirada) {
+        this.idRetirada = idRetirada;
     }
 
     public Date getDataRetirada() {

@@ -4,6 +4,8 @@ import br.com.fiap.Portaria.dto.ApartamentoRequestDTO;
 import br.com.fiap.Portaria.dto.ApartamentoResponseDTO;
 import br.com.fiap.Portaria.entity.Apartamento;
 import br.com.fiap.Portaria.repository.ApartamentoRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,41 +19,54 @@ public class ApartamentoService {
     @Autowired
     private ApartamentoRepository apartamentoRepository;
 
-    public List<ApartamentoResponseDTO> listarTodos(){
+    @Autowired
+    private EntityManager entityManager;
+
+    public List<ApartamentoResponseDTO> listarTodos() {
         return apartamentoRepository.findAll()
                 .stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<ApartamentoResponseDTO> buscarPorId(Long id){
+    public Optional<ApartamentoResponseDTO> buscarPorId(Integer id) {
         return apartamentoRepository.findById(id)
                 .map(this::toResponseDTO);
     }
 
-    public ApartamentoResponseDTO salvar(ApartamentoRequestDTO apartamentoRequestDTO) {
-        Apartamento apartamento = toEntity(apartamentoRequestDTO);
-        Apartamento salva = apartamentoRepository.save(apartamento);
-        return toResponseDTO(salva);
+    public void salvar(ApartamentoRequestDTO apartamentoRequestDTO) {
+        // 1. Busca próximo ID
+        Integer proximoId = buscarProximoIdApartamento();
+
+        // 2. Insere manualmente (SEM procedure)
+        Apartamento apartamento = new Apartamento();
+        apartamento.setIdApartamento(proximoId);
+        apartamento.setTorre(apartamentoRequestDTO.getTorre());
+        apartamento.setBloco(apartamentoRequestDTO.getBloco());
+        apartamento.setNumero(apartamentoRequestDTO.getNumero());
+
+        apartamentoRepository.save(apartamento); // ← JPA normal
     }
 
-    public ApartamentoResponseDTO atualizar(Long id,ApartamentoRequestDTO apartamentoRequestDTO) {
-        return apartamentoRepository.findById(id)
-                .map(apartamento ->{
-                    apartamento.setBloco(apartamentoRequestDTO.getBloco());
-                    apartamento.setNumero(apartamentoRequestDTO.getNumero());
-                    apartamento.setTorre(apartamentoRequestDTO.getTorre());
-
-                    Apartamento apartamentoAtualizado = apartamentoRepository.save(apartamento);
-                    return toResponseDTO(apartamentoAtualizado);
-                })
-                .orElseThrow(() -> new RuntimeException("Apartamento não encontrada"));
-
-
+    private Integer buscarProximoIdApartamento() {
+        Query query = entityManager.createNativeQuery("SELECT NVL(MAX(ID_APARTAMENTO), 0) + 1 FROM TPL_APARTAMENTO");
+        return ((Number) query.getSingleResult()).intValue();
     }
 
-    public void deletar(Long id){
-        apartamentoRepository.deleteById(id);
+    public void atualizar(Integer id, ApartamentoRequestDTO apartamentoRequestDTO) {
+        apartamentoRepository.atualizarApartamento(
+                id,
+                apartamentoRequestDTO.getTorre(),
+                apartamentoRequestDTO.getBloco(),
+                apartamentoRequestDTO.getNumero()
+        );
+    }
+
+    public void deletar(Integer id) {
+        if (!apartamentoRepository.existsById(id)) {
+            throw new RuntimeException("Apartamento não encontrado");
+        }
+        apartamentoRepository.deletarApartamento(id);
     }
 
     private ApartamentoResponseDTO toResponseDTO(Apartamento apartamento) {
@@ -62,14 +77,4 @@ public class ApartamentoService {
                 apartamento.getNumero()
         );
     }
-
-    private Apartamento toEntity(ApartamentoRequestDTO apartamentoRequestDTO) {
-        Apartamento apartamento = new Apartamento();
-        apartamento.setTorre(apartamentoRequestDTO.getTorre());
-        apartamento.setBloco(apartamentoRequestDTO.getBloco());
-        apartamento.setNumero(apartamentoRequestDTO.getNumero());
-
-        return apartamento;
-    }
-
 }

@@ -3,11 +3,10 @@ package br.com.fiap.Portaria.dto;
 import java.util.Date;
 
 public class RetiradaRequestDTO {
-
     private Date dataRetirada;
     private String tokenRetirada;
-    private Long moradorId;
-    private Long portariaId;
+    private Integer moradorId;
+    private Integer portariaId;
 
     public Date getDataRetirada() {
         return dataRetirada;
@@ -17,27 +16,27 @@ public class RetiradaRequestDTO {
         this.dataRetirada = dataRetirada;
     }
 
-    public Long getMoradorId() {
-        return moradorId;
-    }
-
-    public void setMoradorId(Long moradorId) {
-        this.moradorId = moradorId;
-    }
-
-    public Long getPortariaId() {
-        return portariaId;
-    }
-
-    public void setPortariaId(Long portariaId) {
-        this.portariaId = portariaId;
-    }
-
     public String getTokenRetirada() {
         return tokenRetirada;
     }
 
     public void setTokenRetirada(String tokenRetirada) {
         this.tokenRetirada = tokenRetirada;
+    }
+
+    public Integer getMoradorId() {
+        return moradorId;
+    }
+
+    public void setMoradorId(Integer moradorId) {
+        this.moradorId = moradorId;
+    }
+
+    public Integer getPortariaId() {
+        return portariaId;
+    }
+
+    public void setPortariaId(Integer portariaId) {
+        this.portariaId = portariaId;
     }
 }

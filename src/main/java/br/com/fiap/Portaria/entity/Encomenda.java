@@ -9,23 +9,26 @@ import java.util.Date;
 public class Encomenda {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idEncomenda;
+    private Integer idEncomenda;
 
     private String descricao;
     private Date dataRecebida;
     private String status;
 
-    @OneToOne
-    @JoinColumn(name = "ENCOMENDA_MORADOR_FK")
+    @ManyToOne
+    @JoinColumn(name = "ID_MORADOR")
     private Morador morador;
 
     @OneToOne
-    @JoinColumn(name = "ENCOMENDA_RETIRADA_FK")
+    @JoinColumn(name = "ID_RETIRADA")
     private Retirada retirada;
 
-    public Long getIdEncomenda() {
+    public Integer getIdEncomenda() {
         return idEncomenda;
+    }
+
+    public void setIdEncomenda(Integer idEncomenda) {
+        this.idEncomenda = idEncomenda;
     }
 
     public String getDescricao() {

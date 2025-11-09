@@ -22,29 +22,35 @@ public class ApartamentoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApartamentoResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ApartamentoResponseDTO> buscarPorId(@PathVariable Integer id) {
         return apartamentoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ApartamentoResponseDTO criar(@RequestBody ApartamentoRequestDTO apartamentoRequestDTO) {
-        return apartamentoService.salvar(apartamentoRequestDTO);
+    public ResponseEntity<Void> criar(@RequestBody ApartamentoRequestDTO apartamentoRequestDTO) {
+        apartamentoService.salvar(apartamentoRequestDTO);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApartamentoResponseDTO> atualizar(@PathVariable Long id,@RequestBody ApartamentoRequestDTO apartamentoRequestDTO) {
-        try{
-            return ResponseEntity.ok(apartamentoService.atualizar(id, apartamentoRequestDTO));
-        } catch (RuntimeException e){
+    public ResponseEntity<Void> atualizar(@PathVariable Integer id, @RequestBody ApartamentoRequestDTO apartamentoRequestDTO) {
+        try {
+            apartamentoService.atualizar(id, apartamentoRequestDTO);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApartamentoResponseDTO> deletar(@PathVariable Long id) {
-        apartamentoService.deletar(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        try {
+            apartamentoService.deletar(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

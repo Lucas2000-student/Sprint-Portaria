@@ -3,30 +3,30 @@ package br.com.fiap.Portaria.dto;
 import java.util.Date;
 
 public class EncomendaResponseDTO {
-    private Long id;
+    private Integer id;
     private String descricao;
     private Date dataRecebida;
     private String status;
-    private Long idMorador;
-    private Long idRetirada;
+    private Integer moradorId;
+    private Integer retiradaId;
 
     public EncomendaResponseDTO() {}
 
-    public EncomendaResponseDTO(Long id, String descricao, Date dataRecebida, String status, Long idMorador, Long idRetirada) {
+    public EncomendaResponseDTO(Integer id, String descricao, Date dataRecebida, String status, Integer moradorId, Integer retiradaId) {
         this.id = id;
         this.descricao = descricao;
         this.dataRecebida = dataRecebida;
         this.status = status;
-        this.idMorador = idMorador;
-        this.idRetirada = idRetirada;
+        this.moradorId = moradorId;
+        this.retiradaId = retiradaId;
     }
 
-    public Date getDataRecebida() {
-        return dataRecebida;
+    public Integer getId() {
+        return id;
     }
 
-    public void setDataRecebida(Date dataRecebida) {
-        this.dataRecebida = dataRecebida;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getDescricao() {
@@ -37,20 +37,12 @@ public class EncomendaResponseDTO {
         this.descricao = descricao;
     }
 
-    public Long getId() {
-        return id;
+    public Date getDataRecebida() {
+        return dataRecebida;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getIdMorador() {
-        return idMorador;
-    }
-
-    public void setIdMorador(Long idMorador) {
-        this.idMorador = idMorador;
+    public void setDataRecebida(Date dataRecebida) {
+        this.dataRecebida = dataRecebida;
     }
 
     public String getStatus() {
@@ -61,11 +53,19 @@ public class EncomendaResponseDTO {
         this.status = status;
     }
 
-    public Long getIdRetirada() {
-        return idRetirada;
+    public Integer getMoradorId() {
+        return moradorId;
     }
 
-    public void setIdRetirada(Long idRetirada) {
-        this.idRetirada = idRetirada;
+    public void setMoradorId(Integer moradorId) {
+        this.moradorId = moradorId;
+    }
+
+    public Integer getRetiradaId() {
+        return retiradaId;
+    }
+
+    public void setRetiradaId(Integer retiradaId) {
+        this.retiradaId = retiradaId;
     }
 }

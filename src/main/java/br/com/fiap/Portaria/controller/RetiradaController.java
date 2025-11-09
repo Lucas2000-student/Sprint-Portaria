@@ -22,7 +22,7 @@ public class RetiradaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RetiradaResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RetiradaResponseDTO> buscarPorId(@PathVariable Integer id) {
         return retiradaService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,7 +34,7 @@ public class RetiradaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RetiradaResponseDTO> atualizar(@PathVariable Long id, @RequestBody RetiradaRequestDTO retiradaRequestDTO) {
+    public ResponseEntity<RetiradaResponseDTO> atualizar(@PathVariable Integer id, @RequestBody RetiradaRequestDTO retiradaRequestDTO) {
         try {
             return ResponseEntity.ok(retiradaService.atualizar(id, retiradaRequestDTO));
         } catch (RuntimeException e) {
@@ -43,7 +43,7 @@ public class RetiradaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         retiradaService.deletar(id);
         return ResponseEntity.noContent().build();
     }

@@ -2,12 +2,12 @@ package br.com.fiap.Portaria.dto;
 
 public class ApartamentoResponseDTO {
 
-    private Long idApartamento;
+    private Integer idApartamento;
     private Integer Torre;
     private String bloco;
     private String numero;
 
-    public ApartamentoResponseDTO(Long idApartamento, Integer torre, String bloco, String numero) {
+    public ApartamentoResponseDTO(Integer idApartamento, Integer torre, String bloco, String numero) {
         this.idApartamento = idApartamento;
         this.Torre = torre;
         this.bloco = bloco;
@@ -22,11 +22,11 @@ public class ApartamentoResponseDTO {
         this.bloco = bloco;
     }
 
-    public Long getIdApartamento() {
+    public Integer getIdApartamento() {
         return idApartamento;
     }
 
-    public void setIdApartamento(Long idApartamento) {
+    public void setIdApartamento(Integer idApartamento) {
         this.idApartamento = idApartamento;
     }
 

@@ -6,17 +6,8 @@ public class EncomendaRequestDTO {
     private String descricao;
     private Date dataRecebida;
     private String status;
-    private Long idMorador;
-    protected Long idRetirada;
-
-
-    public Date getDataRecebida() {
-        return dataRecebida;
-    }
-
-    public void setDataRecebida(Date dataRecebida) {
-        this.dataRecebida = dataRecebida;
-    }
+    private Integer moradorId;
+    private Integer retiradaId;
 
     public String getDescricao() {
         return descricao;
@@ -26,12 +17,12 @@ public class EncomendaRequestDTO {
         this.descricao = descricao;
     }
 
-    public Long getIdMorador() {
-        return idMorador;
+    public Date getDataRecebida() {
+        return dataRecebida;
     }
 
-    public void setIdMorador(Long moradorId) {
-        this.idMorador = idMorador;
+    public void setDataRecebida(Date dataRecebida) {
+        this.dataRecebida = dataRecebida;
     }
 
     public String getStatus() {
@@ -42,11 +33,19 @@ public class EncomendaRequestDTO {
         this.status = status;
     }
 
-    public Long getIdRetirada() {
-        return idRetirada;
+    public Integer getMoradorId() {
+        return moradorId;
     }
 
-    public void setIdRetirada(Long idRetirada) {
-        this.idRetirada = idRetirada;
+    public void setMoradorId(Integer moradorId) {
+        this.moradorId = moradorId;
+    }
+
+    public Integer getRetiradaId() {
+        return retiradaId;
+    }
+
+    public void setRetiradaId(Integer retiradaId) {
+        this.retiradaId = retiradaId;
     }
 }

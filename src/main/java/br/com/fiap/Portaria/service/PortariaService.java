@@ -4,6 +4,8 @@ import br.com.fiap.Portaria.dto.PortariaRequestDTO;
 import br.com.fiap.Portaria.dto.PortariaResponseDTO;
 import br.com.fiap.Portaria.entity.Portaria;
 import br.com.fiap.Portaria.repository.PortariaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ public class PortariaService {
     @Autowired
     private PortariaRepository portariaRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
     public List<PortariaResponseDTO> listarTodas() {
         return portariaRepository.findAll()
                 .stream()
@@ -24,33 +29,46 @@ public class PortariaService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<PortariaResponseDTO> buscarPorId(Long id) {
+    public Optional<PortariaResponseDTO> buscarPorId(Integer id) {
         return portariaRepository.findById(id)
                 .map(this::toResponseDTO);
     }
 
-    public PortariaResponseDTO salvar(PortariaRequestDTO portariaRequestDTO) {
-        Portaria portaria = toEntity(portariaRequestDTO);
-        Portaria portariaSalva = portariaRepository.save(portaria);
-        return toResponseDTO(portariaSalva);
+    // SALVAR COM PROCEDURE + ID MANUAL
+    public void salvar(PortariaRequestDTO portariaRequestDTO) {
+        // 1. Busca próximo ID
+        Integer proximoId = buscarProximoIdPortaria();
+
+        // 2. Chama procedure passando o ID
+        Query query = entityManager.createNativeQuery(
+                "CALL INSERIR_PORTEIRO(:id, :nomePorteiro, :turno, :contato)"
+        );
+        query.setParameter("id", proximoId);
+        query.setParameter("nomePorteiro", portariaRequestDTO.getNomePorteiro());
+        query.setParameter("turno", portariaRequestDTO.getTurno());
+        query.setParameter("contato", portariaRequestDTO.getContato());
+        query.executeUpdate();
     }
 
-    public PortariaResponseDTO atualizar(Long id, PortariaRequestDTO portariaRequestDTO) {
-        return portariaRepository.findById(id)
-                .map(portaria -> {
-                    portaria.setNomePorteiro(portariaRequestDTO.getNomePorteiro());
-                    portaria.setTurno(portariaRequestDTO.getTurno());
-                    portaria.setContato(portariaRequestDTO.getContato());
-                    portaria.setDataRegistro(portariaRequestDTO.getDataRegistro());
-
-                    Portaria portariaSalva = portariaRepository.save(portaria);
-                    return toResponseDTO(portariaSalva);
-                })
-                .orElseThrow(() -> new RuntimeException("Registro de portaria não encontrado"));
+    // ATUALIZAR COM PROCEDURE (já recebe ID)
+    public void atualizar(Integer id, PortariaRequestDTO portariaRequestDTO) {
+        portariaRepository.atualizarPorteiro(
+                id,
+                portariaRequestDTO.getTurno(),
+                portariaRequestDTO.getContato()
+        );
     }
 
-    public void deletar(Long id) {
-        portariaRepository.deleteById(id);
+    public void deletar(Integer id) {
+        if (!portariaRepository.existsById(id)) {
+            throw new RuntimeException("Portaria não encontrada");
+        }
+        portariaRepository.deletarPorteiro(id);
+    }
+
+    private Integer buscarProximoIdPortaria() {
+        Query query = entityManager.createNativeQuery("SELECT NVL(MAX(ID_PORTARIA), 0) + 1 FROM TPL_PORTARIA");
+        return ((Number) query.getSingleResult()).intValue();
     }
 
     private PortariaResponseDTO toResponseDTO(Portaria portaria) {
@@ -61,15 +79,5 @@ public class PortariaService {
                 portaria.getContato(),
                 portaria.getDataRegistro()
         );
-    }
-
-    private Portaria toEntity(PortariaRequestDTO dto) {
-        Portaria portaria = new Portaria();
-        portaria.setNomePorteiro(dto.getNomePorteiro());
-        portaria.setTurno(dto.getTurno());
-        portaria.setContato(dto.getContato());
-        portaria.setDataRegistro(dto.getDataRegistro());
-
-        return portaria;
     }
 }

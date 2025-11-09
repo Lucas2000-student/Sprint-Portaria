@@ -2,22 +2,35 @@ package br.com.fiap.Portaria.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "TPL_PORTARIA")
 public class Portaria {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPortaria;
+    private Integer idPortaria;
 
     private String nomePorteiro;
     private String turno;
     private String contato;
     private Date dataRegistro;
 
-    public Long getIdPortaria() {
+    @OneToMany(mappedBy = "portaria")
+    private List<Retirada> retiradas;
+
+    public Portaria() {
+        this.retiradas = new ArrayList<>();
+    }
+
+    public Integer getIdPortaria() {
         return idPortaria;
+    }
+
+    public void setIdPortaria(Integer idPortaria) {
+        this.idPortaria = idPortaria;
     }
 
     public String getNomePorteiro() {
@@ -50,5 +63,13 @@ public class Portaria {
 
     public void setDataRegistro(Date dataRegistro) {
         this.dataRegistro = dataRegistro;
+    }
+
+    public List<Retirada> getRetiradas() {
+        return retiradas;
+    }
+
+    public void setRetiradas(List<Retirada> retiradas) {
+        this.retiradas = retiradas;
     }
 }

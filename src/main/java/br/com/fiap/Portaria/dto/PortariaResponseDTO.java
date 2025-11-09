@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class PortariaResponseDTO {
 
-    private Long idPortaria;
+    private Integer idPortaria;
     private String nomePorteiro;
     private String turno;
     private String contato;
@@ -13,7 +13,7 @@ public class PortariaResponseDTO {
     public PortariaResponseDTO() {
     }
 
-    public PortariaResponseDTO(Long idPortaria, String nomePorteiro, String turno, String contato, Date dataRegistro) {
+    public PortariaResponseDTO(Integer idPortaria, String nomePorteiro, String turno, String contato, Date dataRegistro) {
         this.idPortaria = idPortaria;
         this.nomePorteiro = nomePorteiro;
         this.turno = turno;
@@ -37,11 +37,11 @@ public class PortariaResponseDTO {
         this.dataRegistro = dataRegistro;
     }
 
-    public Long getIdPortaria() {
+    public Integer getIdPortaria() {
         return idPortaria;
     }
 
-    public void setIdPortaria(Long idPortaria) {
+    public void setIdPortaria(Integer idPortaria) {
         this.idPortaria = idPortaria;
     }
 

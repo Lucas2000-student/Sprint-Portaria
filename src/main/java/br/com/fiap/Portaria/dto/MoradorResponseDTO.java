@@ -1,45 +1,25 @@
 package br.com.fiap.Portaria.dto;
 
 public class MoradorResponseDTO {
-
-    private Long idMorador;
+    private Integer idMorador;
     private String nome;
-    private Integer bloco;
     private String contato;
-    private Long idApartamento;
+    private Integer apartamentoId;
 
-    public MoradorResponseDTO() {
-    }
+    public MoradorResponseDTO() {}
 
-    public MoradorResponseDTO(Long idMorador, String nome, String contato, Integer bloco, Long idApartamento) {
+    public MoradorResponseDTO(Integer idMorador, String nome, String contato, Integer apartamentoId) {
         this.idMorador = idMorador;
         this.nome = nome;
         this.contato = contato;
-        this.bloco = bloco;
-        this.idApartamento = idApartamento;
+        this.apartamentoId = apartamentoId;
     }
 
-    public Integer getBloco() {
-        return bloco;
-    }
-
-    public void setBloco(Integer bloco) {
-        this.bloco = bloco;
-    }
-
-    public String getContato() {
-        return contato;
-    }
-
-    public void setContato(String contato) {
-        this.contato = contato;
-    }
-
-    public Long getIdMorador() {
+    public Integer getIdMorador() {
         return idMorador;
     }
 
-    public void setIdMorador(Long idMorador) {
+    public void setIdMorador(Integer idMorador) {
         this.idMorador = idMorador;
     }
 
@@ -51,11 +31,19 @@ public class MoradorResponseDTO {
         this.nome = nome;
     }
 
-    public Long getIdApartamento() {
-        return idApartamento;
+    public String getContato() {
+        return contato;
     }
 
-    public void setIdApartamento(Long idApartamento) {
-        this.idApartamento = idApartamento;
+    public void setContato(String contato) {
+        this.contato = contato;
+    }
+
+    public Integer getApartamentoId() {
+        return apartamentoId;
+    }
+
+    public void setApartamentoId(Integer apartamentoId) {
+        this.apartamentoId = apartamentoId;
     }
 }

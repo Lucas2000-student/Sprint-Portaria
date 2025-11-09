@@ -22,7 +22,7 @@ public class EncomendaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EncomendaResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<EncomendaResponseDTO> buscarPorId(@PathVariable Integer id) {
         return encomendaService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,7 +34,7 @@ public class EncomendaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EncomendaResponseDTO> atualizar(@PathVariable Long id, @RequestBody EncomendaRequestDTO encomendaRequestDTO) {
+    public ResponseEntity<EncomendaResponseDTO> atualizar(@PathVariable Integer id, @RequestBody EncomendaRequestDTO encomendaRequestDTO) {
         try {
             return ResponseEntity.ok(encomendaService.atualizar(id, encomendaRequestDTO));
         } catch (RuntimeException e) {
@@ -43,7 +43,7 @@ public class EncomendaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         encomendaService.deletar(id);
         return ResponseEntity.noContent().build();
     }

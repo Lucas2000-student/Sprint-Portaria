@@ -2,17 +2,44 @@ package br.com.fiap.Portaria.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "TPL_APARTAMENTO")
 public class Apartamento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idApartamento;
+    private Integer idApartamento;
 
     private Integer torre;
     private String bloco;
     private String numero;
+
+    // NOVO: Relacionamento com Morador
+    @OneToMany(mappedBy = "apartamento")
+    private List<Morador> moradores;
+
+    // Construtores
+    public Apartamento() {
+        this.moradores = new ArrayList<>();
+    }
+
+    public Integer getIdApartamento() {
+        return idApartamento;
+    }
+
+    public void setIdApartamento(Integer idApartamento) {
+        this.idApartamento = idApartamento;
+    }
+
+    public Integer getTorre() {
+        return torre;
+    }
+
+    public void setTorre(Integer torre) {
+        this.torre = torre;
+    }
 
     public String getBloco() {
         return bloco;
@@ -20,10 +47,6 @@ public class Apartamento {
 
     public void setBloco(String bloco) {
         this.bloco = bloco;
-    }
-
-    public Long getIdApartamento() {
-        return idApartamento;
     }
 
     public String getNumero() {
@@ -34,11 +57,11 @@ public class Apartamento {
         this.numero = numero;
     }
 
-    public Integer getTorre() {
-        return torre;
+    public List<Morador> getMoradores() {
+        return moradores;
     }
 
-    public void setTorre(Integer torre) {
-        this.torre = torre;
+    public void setMoradores(List<Morador> moradores) {
+        this.moradores = moradores;
     }
 }

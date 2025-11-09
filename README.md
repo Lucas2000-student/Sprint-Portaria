@@ -1,70 +1,110 @@
-# Sistema de Portaria Light
+# Sistema de Gestão de Portaria
 
-O Sistema de Portaria Light é uma aplicação mobile desenvolvida para automatizar o controle de encomendas em condomínios residenciais, proporcionando mais agilidade, segurança e organização no processo de recebimento e retirada de pacotes. A proposta do sistema é modernizar o gerenciamento de entregas, substituindo processos manuais por uma solução digital integrada a um banco de dados relacional.
+## Descrição
+Sistema para gerenciamento de portaria de condomínio, focado no controle de entrega e retirada de encomendas. A aplicação permite o registro, acompanhamento e controle de encomendas recebidas na portaria do condomínio.
 
-## Integrantes
+## Integrantes e Responsabilidades
 
-- **RM560179** Lucas da Ressurreição Barbosa — Java Advanced / IOT
-- **RM560694** Fabrício José da Silva — .Net / Dados
-- **RM559210** Ranaldo José da Silva — Mobile / QA / DevOps
+- **Lucas da Ressurreição Barbosa (RM560179)**
+  - Desenvolvimento Backend (Java/Spring)
+  - Implementação da API REST
+  - Documentação técnica
+  
+- **Fabrício José da Silva (RM560694)**
+  - Modelagem de dados
+  - Implementação das entidades JPA
+  - Testes de integração
 
-## Modelo DER
+- **Ranaldo José da Silva (RM559210)**
+  - DevOps e CI/CD
+  - Testes de qualidade
+  - Infraestrutura
 
-![Modelo DER](./docs/modelo_der.png)
+## Cronograma de Desenvolvimento
 
-## Funcionalidades
+[Link para o cronograma detalhado no Trello](https://trello.com/b/xyz123)
 
-- Cadastro, atualização, listagem e remoção de moradores
-- Gerenciamento de portarias e porteiros
-- Controle de encomendas recebidas e retiradas
-- Integração com banco de dados relacional
-- API RESTful para todas as entidades principais
+## Arquitetura
 
-## Estrutura do Projeto
+### Diagrama de Classes
+![Diagrama de Classes](docs/images/class-diagram.png)
 
-- `entity`: Entidades JPA (Morador, Portaria, Encomenda, Retirada)
-- `repository`: Repositórios Spring Data JPA
-- `service`: Serviços de negócio
-- `controller`: Controllers REST
-- `resources/application.properties`: Configurações de banco de dados e JPA
+### Diagrama ER
+![Diagrama ER](docs/images/er-diagram.png)
 
-## Requisitos
+## Tecnologias Utilizadas
 
 - Java 21
+- Spring Boot 3.2
+- JPA/Hibernate
+- Oracle Database
+- Swagger/OpenAPI
+- JUnit 5
 - Gradle
-- Oracle Database (ou H2 para testes)
-- Variáveis de ambiente: `DB_URL`, `DB_USER`, `DB_PASS`
 
-## Como executar
+## Como Executar
 
-1. Configure as variáveis de ambiente no arquivo `.env` ou diretamente no sistema.
-2. Execute o comando abaixo para iniciar o projeto:
+### Pré-requisitos
+- JDK 21
+- Gradle 8.x
+- Oracle Database 19c
+- Git
 
-```sh
+### Configuração
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/portaria.git
+cd portaria
+```
+
+2. Configure as variáveis de ambiente:
+```properties
+DB_URL=jdbc:oracle:thin:@//localhost:1521/xe
+DB_USER=seu_usuario
+DB_PASS=sua_senha
+```
+
+3. Execute a aplicação:
+```bash
 ./gradlew bootRun
 ```
 
-3. Acesse a API em `http://localhost:8080`.
+## Documentação da API
 
-## Endpoints principais
+A documentação completa da API está disponível através do Swagger UI em:
+```
+http://localhost:8080/swagger-ui.html
+```
 
-- `/moradores` — Gerenciamento de moradores
-- `/portarias` — Gerenciamento de portarias
-- `/encomendas` — Gerenciamento de encomendas
-- `/retiradas` — Gerenciamento de retiradas
+### Endpoints Principais
+
+#### Apartamentos
+- `GET /api/v1/apartamentos` - Lista todos apartamentos
+- `POST /api/v1/apartamentos` - Cadastra novo apartamento
+- `GET /api/v1/apartamentos/{id}` - Obtém apartamento específico
+- `PUT /api/v1/apartamentos/{id}` - Atualiza apartamento
+- `DELETE /api/v1/apartamentos/{id}` - Remove apartamento
+
+[Documentação completa dos endpoints](docs/endpoints.md)
 
 ## Testes
 
-Para rodar os testes automatizados:
-
-```sh
+Execute os testes automatizados com:
+```bash
 ./gradlew test
 ```
 
-## Vídeo de Apresentação
+A cobertura de testes pode ser verificada em:
+```bash
+./gradlew jacocoTestReport
+```
 
-[Assista aqui](https://youtu.be/DnbmD0YmciU)
+## Links Importantes
+
+- [Vídeo de Apresentação](https://youtube.com/xyz123)
+- [Documentação Técnica](docs/technical.md)
+- [Coleção Postman](docs/postman/portaria.json)
 
 ## Licença
 
-Projeto acadêmico FIAP. Uso livre para fins educacionais.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
