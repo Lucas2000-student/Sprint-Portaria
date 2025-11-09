@@ -11,9 +11,12 @@ public class Morador {
     private Long idMorador;
 
     private String nome;
-    private Integer apartamento;
     private Integer bloco;
     private String contato;
+
+    @OneToOne
+    @JoinColumn(name = "MORADOR_APARTAMENTO_FK")
+    private Apartamento idApartamento;
 
     public Long getIdMorador() {
         return idMorador;
@@ -27,13 +30,6 @@ public class Morador {
         this.nome = nome;
     }
 
-    public Integer getApartamento() {
-        return apartamento;
-    }
-
-    public void setApartamento(Integer apartamento) {
-        this.apartamento = apartamento;
-    }
 
     public Integer getBloco() {
         return bloco;
@@ -49,5 +45,13 @@ public class Morador {
 
     public void setContato(String contato) {
         this.contato = contato;
+    }
+
+    public Apartamento getIdApartamento() {
+        return idApartamento;
+    }
+
+    public void setIdApartamento(Apartamento idApartamento) {
+        this.idApartamento = idApartamento;
     }
 }

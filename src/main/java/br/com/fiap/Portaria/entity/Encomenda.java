@@ -17,11 +17,11 @@ public class Encomenda {
     private String status;
 
     @OneToOne
-    @JoinColumn(name = "TPL_MORADOR_ID_MORADOR")
+    @JoinColumn(name = "ENCOMENDA_MORADOR_FK")
     private Morador morador;
 
     @OneToOne
-    @JoinColumn(name = "TPL_RETIRADA_ID_RETIRADA")
+    @JoinColumn(name = "ENCOMENDA_RETIRADA_FK")
     private Retirada retirada;
 
     public Long getIdEncomenda() {

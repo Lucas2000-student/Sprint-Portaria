@@ -16,11 +16,11 @@ public class Retirada {
     private String tokenRetirada;
 
     @OneToOne
-    @JoinColumn(name = "TPL_MORADOR_ID_MORADOR")
+    @JoinColumn(name = "RETIRADA_MORDADOR_FK")
     private Morador morador;
 
     @OneToOne
-    @JoinColumn(name = "TPL_PORTARIA_ID_PORTARIA")
+    @JoinColumn(name = "RETIRADA_PORTARIA_FK")
     private Portaria portaria;
 
     public Long getIdRetirada() {

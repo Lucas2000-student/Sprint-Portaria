@@ -1,6 +1,7 @@
 package br.com.fiap.Portaria.controller;
 
-import br.com.fiap.Portaria.entity.Encomenda;
+import br.com.fiap.Portaria.dto.EncomendaRequestDTO;
+import br.com.fiap.Portaria.dto.EncomendaResponseDTO;
 import br.com.fiap.Portaria.service.EncomendaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,26 +17,26 @@ public class EncomendaController {
     private EncomendaService encomendaService;
 
     @GetMapping
-    public List<Encomenda> listarTodas() {
+    public List<EncomendaResponseDTO> listarTodas() {
         return encomendaService.listarTodas();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Encomenda> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<EncomendaResponseDTO> buscarPorId(@PathVariable Long id) {
         return encomendaService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Encomenda criar(@RequestBody Encomenda encomenda) {
-        return encomendaService.salvar(encomenda);
+    public EncomendaResponseDTO criar(@RequestBody EncomendaRequestDTO encomendaRequestDTO) {
+        return encomendaService.salvar(encomendaRequestDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Encomenda> atualizar(@PathVariable Long id, @RequestBody Encomenda encomenda) {
+    public ResponseEntity<EncomendaResponseDTO> atualizar(@PathVariable Long id, @RequestBody EncomendaRequestDTO encomendaRequestDTO) {
         try {
-            return ResponseEntity.ok(encomendaService.atualizar(id, encomenda));
+            return ResponseEntity.ok(encomendaService.atualizar(id, encomendaRequestDTO));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -47,4 +48,3 @@ public class EncomendaController {
         return ResponseEntity.noContent().build();
     }
 }
-

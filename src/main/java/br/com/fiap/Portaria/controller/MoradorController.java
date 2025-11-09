@@ -1,5 +1,7 @@
 package br.com.fiap.Portaria.controller;
 
+import br.com.fiap.Portaria.dto.MoradorRequestDTO;
+import br.com.fiap.Portaria.dto.MoradorResponseDTO;
 import br.com.fiap.Portaria.entity.Morador;
 import br.com.fiap.Portaria.service.MoradorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +18,26 @@ public class MoradorController {
     private MoradorService moradorService;
 
     @GetMapping
-    public List<Morador> listarTodos() {
+    public List<MoradorResponseDTO> listarTodos() {
         return moradorService.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Morador> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<MoradorResponseDTO> buscarPorId(@PathVariable Long id) {
         return moradorService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Morador criar(@RequestBody Morador morador) {
-        return moradorService.salvar(morador);
+    public MoradorResponseDTO criar(@RequestBody MoradorRequestDTO moradorRequestDTO) {
+        return moradorService.salvar(moradorRequestDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Morador> atualizar(@PathVariable Long id, @RequestBody Morador morador) {
+    public ResponseEntity<MoradorResponseDTO> atualizar(@PathVariable Long id, @RequestBody MoradorRequestDTO moradorRequestDTO) {
         try {
-            return ResponseEntity.ok(moradorService.atualizar(id, morador));
+            return ResponseEntity.ok(moradorService.atualizar(id, moradorRequestDTO));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

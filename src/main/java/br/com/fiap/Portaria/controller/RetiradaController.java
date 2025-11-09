@@ -1,6 +1,7 @@
 package br.com.fiap.Portaria.controller;
 
-import br.com.fiap.Portaria.entity.Retirada;
+import br.com.fiap.Portaria.dto.RetiradaRequestDTO;
+import br.com.fiap.Portaria.dto.RetiradaResponseDTO;
 import br.com.fiap.Portaria.service.RetiradaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,26 +17,26 @@ public class RetiradaController {
     private RetiradaService retiradaService;
 
     @GetMapping
-    public List<Retirada> listarTodas() {
+    public List<RetiradaResponseDTO> listarTodas() {
         return retiradaService.listarTodas();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Retirada> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RetiradaResponseDTO> buscarPorId(@PathVariable Long id) {
         return retiradaService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Retirada criar(@RequestBody Retirada retirada) {
-        return retiradaService.salvar(retirada);
+    public RetiradaResponseDTO criar(@RequestBody RetiradaRequestDTO retiradaRequestDTO) {
+        return retiradaService.salvar(retiradaRequestDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Retirada> atualizar(@PathVariable Long id, @RequestBody Retirada retirada) {
+    public ResponseEntity<RetiradaResponseDTO> atualizar(@PathVariable Long id, @RequestBody RetiradaRequestDTO retiradaRequestDTO) {
         try {
-            return ResponseEntity.ok(retiradaService.atualizar(id, retirada));
+            return ResponseEntity.ok(retiradaService.atualizar(id, retiradaRequestDTO));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
