@@ -1,48 +1,76 @@
-# Sistema de Gestão de Portaria
+# 🏢 Sistema de Gestão de Portaria
 
-## Descrição
+## 📋 Descrição
 Sistema para gerenciamento de portaria de condomínio, focado no controle de entrega e retirada de encomendas. A aplicação permite o registro, acompanhamento e controle de encomendas recebidas na portaria do condomínio.
 
-## Integrantes e Responsabilidades
+## 👥 Integrantes e Responsabilidades
 
 - **Lucas da Ressurreição Barbosa (RM560179)**
-  - Desenvolvimento Backend (Java/Spring)
-  - Implementação da API REST
+  - Java Advanced
+  - IOT
   - Documentação técnica
-  
+
 - **Fabrício José da Silva (RM560694)**
-  - Modelagem de dados
-  - Implementação das entidades JPA
-  - Testes de integração
+  - Banco de Dados
+  - .NET
+  - Estrutura total do Banco
 
 - **Ranaldo José da Silva (RM559210)**
   - DevOps e CI/CD
   - Testes de qualidade
-  - Infraestrutura
+  - FrontEnd Mobile
 
-## Cronograma de Desenvolvimento
+## 🛠️ Tecnologias Utilizadas
 
-[Link para o cronograma detalhado no Trello](https://trello.com/b/xyz123)
+- **Backend**: Java 21, Spring Boot 3.2, JPA/Hibernate
+- **Banco de Dados**: Oracle Database
+- **Documentação**: Swagger/OpenAPI
+- **Testes**: JUnit 5, Postman
+- **Build**: Gradle
+- **Controle de Versão**: Git/GitHub
 
-## Arquitetura
+## 🏗️ Diagramas da Arquitetura
 
 ### Diagrama de Classes
-![Diagrama de Classes](docs/images/class-diagram.png)
+<img src="docs/images/class-diagram.png" alt="Diagrama de Classes" width="600"/>
 
-### Diagrama ER
-![Diagrama ER](docs/images/er-diagram.png)
+### DER (Diagrama Entidade-Relacionamento)
+<img src="docs/images/der-diagram.png" alt="DER" width="600"/>
 
-## Tecnologias Utilizadas
+### Explicação dos Relacionamentos
+- **Morador ↔ Apartamento**: N:1 (Muitos moradores em um apartamento)
+- **Encomenda ↔ Morador**: N:1 (Muitas encomendas para um morador)
+- **Encomenda ↔ Retirada**: 1:1 (Uma encomenda tem uma retirada)
+- **Retirada ↔ Portaria**: N:1 (Muitas retiradas por uma portaria)
 
-- Java 21
-- Spring Boot 3.2
-- JPA/Hibernate
-- Oracle Database
-- Swagger/OpenAPI
-- JUnit 5
-- Gradle
+## 💾 Implementação JPA/Hibernate
 
-## Como Executar
+### Estratégia de IDs
+- IDs gerados manualmente via procedures no banco
+- Uso de `EntityManager` para buscar próximo ID disponível
+- Mapeamento ORM com anotações JPA (@Entity, @Table, @Id)
+
+### Entidades Implementadas
+- **`Apartamento`** - Torre, bloco, número
+- **`Morador`** - Nome, contato, apartamento
+- **`Encomenda`** - Descrição, data recebida, status
+- **`Retirada`** - Data retirada, token, morador, portaria
+- **`Portaria`** - Nome porteiro, turno, contato, data registro
+
+## 🌐 API RESTful - Documentação com Swagger
+
+### Princípios REST Aplicados
+- Recursos nomeados corretamente (/moradores, /apartamentos, /encomendas)
+- Verbos HTTP semânticos (GET, POST, PUT, DELETE)
+- Status codes apropriados (200, 201, 404, 500)
+- JSON como formato de dados
+
+### Documentação Interativa
+Acesse a documentação completa em: `http://localhost:8080/swagger-ui.html`
+
+<img src="docs/images/swagger-screenshot.png" alt="Swagger UI" width="700"/>
+
+## 🚀 Como Executar
 
 ### Pré-requisitos
 - JDK 21
@@ -53,58 +81,96 @@ Sistema para gerenciamento de portaria de condomínio, focado no controle de ent
 ### Configuração
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/portaria.git
-cd portaria
+git clone https://github.com/Lucas2000-student/Sprint-Portaria.git
 ```
-
 2. Configure as variáveis de ambiente:
-```properties
+
+```bash
 DB_URL=jdbc:oracle:thin:@//localhost:1521/xe
 DB_USER=seu_usuario
 DB_PASS=sua_senha
 ```
-
 3. Execute a aplicação:
 ```bash
 ./gradlew bootRun
 ```
-
-## Documentação da API
-
-A documentação completa da API está disponível através do Swagger UI em:
+4. Acesse a aplicação:
+```bash
+http://localhost:8080
 ```
-http://localhost:8080/swagger-ui.html
-```
+## 📚 Documentação da API
 
 ### Endpoints Principais
 
-#### Apartamentos
-- `GET /api/v1/apartamentos` - Lista todos apartamentos
-- `POST /api/v1/apartamentos` - Cadastra novo apartamento
-- `GET /api/v1/apartamentos/{id}` - Obtém apartamento específico
-- `PUT /api/v1/apartamentos/{id}` - Atualiza apartamento
-- `DELETE /api/v1/apartamentos/{id}` - Remove apartamento
+#### 🏠 Apartamentos
+- `GET /apartamentos` - Lista todos os apartamentos
+- `POST /apartamentos` - Cadastra novo apartamento
+- `GET /apartamentos/{id}` - Busca apartamento por ID
+- `PUT /apartamentos/{id}` - Atualiza apartamento
+- `DELETE /apartamentos/{id}` - Remove apartamento
 
-[Documentação completa dos endpoints](docs/endpoints.md)
+#### 👨‍👩‍👧‍👦 Moradores
+- `GET /moradores` - Lista todos os moradores
+- `POST /moradores` - Cadastra novo morador
+- `GET /moradores/{id}` - Busca morador por ID
+- `PUT /moradores/{id}` - Atualiza morador
+- `DELETE /moradores/{id}` - Remove morador
 
-## Testes
+#### 📦 Encomendas
+- `GET /encomendas` - Lista todas as encomendas
+- `POST /encomendas` - Registra nova encomenda
+- `GET /encomendas/{id}` - Busca encomenda por ID
+- `PUT /encomendas/{id}` - Atualiza encomenda
+- `DELETE /encomendas/{id}` - Remove encomenda
 
-Execute os testes automatizados com:
+#### 🏢 Portaria
+- `GET /portarias` - Lista todos os registros de portaria
+- `POST /portarias` - Registra novo porteiro/turno
+- `GET /portarias/{id}` - Busca portaria por ID
+- `PUT /portarias/{id}` - Atualiza portaria
+- `DELETE /portarias/{id}` - Remove portaria
+
+#### 🎫 Retiradas
+- `GET /retiradas` - Lista todas as retiradas
+- `POST /retiradas` - Registra nova retirada
+- `GET /retiradas/{id}` - Busca retirada por ID
+- `PUT /retiradas/{id}` - Atualiza retirada
+- `DELETE /retiradas/{id}` - Remove retirada
+
+## 🧪 Evidências de Teste
+
+### Testes de Persistência
+<img src="docs/images/test-post-morador.png" alt="Teste POST Morador" width="500"/>
+<img src="docs/images/test-get-morador.png" alt="Teste GET Morador" width="500"/>
+
+### Testes de Procedures
+<img src="docs/images/test-procedure-apartamento.png" alt="Teste Procedure Apartamento" width="500"/>
+
+### Execução de Testes Automatizados
 ```bash
 ./gradlew test
 ```
 
-A cobertura de testes pode ser verificada em:
-```bash
-./gradlew jacocoTestReport
-```
+## 🎥 Vídeo de Apresentação
 
-## Links Importantes
+📹 **Assista ao vídeo**: [LINK_DO_VIDEO_AQUI]
 
-- [Vídeo de Apresentação](https://youtube.com/xyz123)
-- [Documentação Técnica](docs/technical.md)
-- [Coleção Postman](docs/postman/portaria.json)
+### Conteúdo do Vídeo:
+- **Proposta Tecnológica**: Arquitetura baseada em Spring Boot e Oracle
+- **Público-Alvo**: Porteiros, síndicos e moradores de condomínio
+- **Problemas Resolvidos**:
+  - Controle eficiente de entrada/saída de encomendas
+  - Rastreabilidade completa das entregas
+  - Redução de extravios e conflitos
+  - Gestão organizada da portaria
+- **Demonstração**: Funcionalidades principais e endpoints da API
 
-## Licença
+## 📊 Funcionalidades Principais
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+- ✅ Cadastro de moradores e apartamentos
+- ✅ Registro de encomendas recebidas
+- ✅ Controle de retiradas com token
+- ✅ Gestão de portaria e turnos
+- ✅ Procedures para operações críticas
+- ✅ API RESTful documentada
+- ✅ Validações de dados e relacionamentos

@@ -13,8 +13,9 @@ public interface ApartamentoRepository extends JpaRepository<Apartamento, Intege
 
     @Modifying
     @Transactional
-    @Query(value = "CALL INSERIR_APARTAMENTO(:torre, :bloco, :numero)", nativeQuery = true)
-    void inserirApartamento(@Param("torre") Integer torre,
+    @Query(value = "CALL INSERIR_APARTAMENTO(:id, :torre, :bloco, :numero)", nativeQuery = true)
+    void inserirApartamento(@Param("id") Integer id,
+                            @Param("torre") Integer torre,
                             @Param("bloco") String bloco,
                             @Param("numero") String numero);
 

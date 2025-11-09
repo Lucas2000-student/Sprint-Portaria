@@ -35,17 +35,14 @@ public class ApartamentoService {
     }
 
     public void salvar(ApartamentoRequestDTO apartamentoRequestDTO) {
-        // 1. Busca próximo ID
         Integer proximoId = buscarProximoIdApartamento();
 
-        // 2. Insere manualmente (SEM procedure)
-        Apartamento apartamento = new Apartamento();
-        apartamento.setIdApartamento(proximoId);
-        apartamento.setTorre(apartamentoRequestDTO.getTorre());
-        apartamento.setBloco(apartamentoRequestDTO.getBloco());
-        apartamento.setNumero(apartamentoRequestDTO.getNumero());
-
-        apartamentoRepository.save(apartamento); // ← JPA normal
+        apartamentoRepository.inserirApartamento(
+                proximoId,
+                apartamentoRequestDTO.getTorre(),
+                apartamentoRequestDTO.getBloco(),
+                apartamentoRequestDTO.getNumero()
+        );
     }
 
     private Integer buscarProximoIdApartamento() {

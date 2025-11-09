@@ -34,23 +34,17 @@ public class PortariaService {
                 .map(this::toResponseDTO);
     }
 
-    // SALVAR COM PROCEDURE + ID MANUAL
     public void salvar(PortariaRequestDTO portariaRequestDTO) {
-        // 1. Busca próximo ID
         Integer proximoId = buscarProximoIdPortaria();
 
-        // 2. Chama procedure passando o ID
-        Query query = entityManager.createNativeQuery(
-                "CALL INSERIR_PORTEIRO(:id, :nomePorteiro, :turno, :contato)"
+        portariaRepository.inserirPorteiro(
+                proximoId,
+                portariaRequestDTO.getNomePorteiro(),
+                portariaRequestDTO.getTurno(),
+                portariaRequestDTO.getContato()
         );
-        query.setParameter("id", proximoId);
-        query.setParameter("nomePorteiro", portariaRequestDTO.getNomePorteiro());
-        query.setParameter("turno", portariaRequestDTO.getTurno());
-        query.setParameter("contato", portariaRequestDTO.getContato());
-        query.executeUpdate();
     }
 
-    // ATUALIZAR COM PROCEDURE (já recebe ID)
     public void atualizar(Integer id, PortariaRequestDTO portariaRequestDTO) {
         portariaRepository.atualizarPorteiro(
                 id,

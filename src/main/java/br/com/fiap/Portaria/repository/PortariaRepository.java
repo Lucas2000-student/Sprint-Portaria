@@ -13,8 +13,9 @@ public interface PortariaRepository extends JpaRepository<Portaria, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "CALL INSERIR_PORTEIRO(:nomePorteiro, :turno, :contato)", nativeQuery = true)
-    void inserirPorteiro(@Param("nomePorteiro") String nomePorteiro,
+    @Query(value = "CALL INSERIR_PORTEIRO(:id, :nomePorteiro, :turno, :contato)", nativeQuery = true)
+    void inserirPorteiro(@Param("id") Integer id,
+                         @Param("nomePorteiro") String nomePorteiro,
                          @Param("turno") String turno,
                          @Param("contato") String contato);
 
