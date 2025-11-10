@@ -2,16 +2,16 @@ package br.com.fiap.Portaria.dto;
 
 public class ApartamentoRequestDTO {
 
-    private Integer Torre;
+    private Integer torre;
     private String bloco;
     private String numero;
 
     public Integer getTorre() {
-        return Torre;
+        return torre;
     }
 
     public void setTorre(Integer torre) {
-        Torre = torre;
+        this.torre = torre;
     }
 
     public String getBloco() {

@@ -3,13 +3,13 @@ package br.com.fiap.Portaria.dto;
 public class ApartamentoResponseDTO {
 
     private Integer idApartamento;
-    private Integer Torre;
+    private Integer torre;
     private String bloco;
     private String numero;
 
     public ApartamentoResponseDTO(Integer idApartamento, Integer torre, String bloco, String numero) {
         this.idApartamento = idApartamento;
-        this.Torre = torre;
+        this.torre = torre;
         this.bloco = bloco;
         this.numero = numero;
     }
@@ -23,11 +23,11 @@ public class ApartamentoResponseDTO {
     }
 
     public Integer getTorre() {
-        return Torre;
+        return torre;
     }
 
     public void setTorre(Integer torre) {
-        Torre = torre;
+        this.torre = torre;
     }
 
     public String getBloco() {
