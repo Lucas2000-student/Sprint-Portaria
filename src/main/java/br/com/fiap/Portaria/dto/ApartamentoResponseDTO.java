@@ -14,14 +14,6 @@ public class ApartamentoResponseDTO {
         this.numero = numero;
     }
 
-    public String getBloco() {
-        return bloco;
-    }
-
-    public void setBloco(String bloco) {
-        this.bloco = bloco;
-    }
-
     public Integer getIdApartamento() {
         return idApartamento;
     }
@@ -30,19 +22,27 @@ public class ApartamentoResponseDTO {
         this.idApartamento = idApartamento;
     }
 
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
     public Integer getTorre() {
         return Torre;
     }
 
     public void setTorre(Integer torre) {
         Torre = torre;
+    }
+
+    public String getBloco() {
+        return bloco;
+    }
+
+    public void setBloco(String bloco) {
+        this.bloco = bloco;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 }

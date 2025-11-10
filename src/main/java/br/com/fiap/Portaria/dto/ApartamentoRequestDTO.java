@@ -6,6 +6,14 @@ public class ApartamentoRequestDTO {
     private String bloco;
     private String numero;
 
+    public Integer getTorre() {
+        return Torre;
+    }
+
+    public void setTorre(Integer torre) {
+        Torre = torre;
+    }
+
     public String getBloco() {
         return bloco;
     }
@@ -20,13 +28,5 @@ public class ApartamentoRequestDTO {
 
     public void setNumero(String numero) {
         this.numero = numero;
-    }
-
-    public Integer getTorre() {
-        return Torre;
-    }
-
-    public void setTorre(Integer torre) {
-        Torre = torre;
     }
 }
