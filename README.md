@@ -159,7 +159,7 @@ http://localhost:8080
 
 ## 🎥 Vídeo de Apresentação
 
-📹 **Assista ao vídeo**: [LINK_DO_VIDEO_AQUI]
+[📹 Assista ao vídeo](https://youtu.be/jH_lAsU8PXg)
 
 ### Conteúdo do Vídeo:
 - **Proposta Tecnológica**: Arquitetura baseada em Spring Boot e Oracle
