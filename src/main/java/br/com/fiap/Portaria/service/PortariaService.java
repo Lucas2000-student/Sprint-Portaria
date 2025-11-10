@@ -48,6 +48,7 @@ public class PortariaService {
     public void atualizar(Integer id, PortariaRequestDTO portariaRequestDTO) {
         portariaRepository.atualizarPorteiro(
                 id,
+                portariaRequestDTO.getNomePorteiro(),
                 portariaRequestDTO.getTurno(),
                 portariaRequestDTO.getContato()
         );

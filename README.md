@@ -29,7 +29,13 @@ Sistema para gerenciamento de portaria de condomínio, focado no controle de ent
 - **Build**: Gradle
 - **Controle de Versão**: Git/GitHub
 
+## Cronogrâma Técnico
+
+[👉 Acesse o Cronograma da Sprint 2](docs/CRONOGRAMA_SPRINT_2.md)
+
 ## 🏗️ Diagramas da Arquitetura
+
+<img src="docs/images/arquitetura.png" alt="Diagrama de Arquitetura" width="700">
 
 ### Diagrama de Classes
 <img src="docs/images/class-diagram.png" alt="Diagrama de Classes" width="600"/>
