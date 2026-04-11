@@ -1,10 +1,17 @@
 package br.com.fiap.Portaria.entity;
 
+import br.com.fiap.Portaria.dto.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "TPL_MORADOR")
 public class Morador {
@@ -25,56 +32,15 @@ public class Morador {
     @OneToMany(mappedBy = "morador")
     private List<Retirada> retiradas;
 
-    public Morador() {
-        this.encomendas = new ArrayList<>();
-        this.retiradas = new ArrayList<>();
-    }
+    @Column(unique = true)
+    private String email;
 
-    public Integer getIdMorador() {
-        return idMorador;
-    }
+    @Enumerated(EnumType.STRING)
+    private Role role; // ADMIN ou MORADOR
 
-    public void setIdMorador(Integer idMorador) {
-        this.idMorador = idMorador;
-    }
+    @Column(name = "FIREBASE_UID", unique = true)
+    private String firebaseUid;
 
-    public String getNome() {
-        return nome;
-    }
+    private String telefone;
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getContato() {
-        return contato;
-    }
-
-    public void setContato(String contato) {
-        this.contato = contato;
-    }
-
-    public Apartamento getApartamento() {
-        return apartamento;
-    }
-
-    public void setApartamento(Apartamento apartamento) {
-        this.apartamento = apartamento;
-    }
-
-    public List<Encomenda> getEncomendas() {
-        return encomendas;
-    }
-
-    public void setEncomendas(List<Encomenda> encomendas) {
-        this.encomendas = encomendas;
-    }
-
-    public List<Retirada> getRetiradas() {
-        return retiradas;
-    }
-
-    public void setRetiradas(List<Retirada> retiradas) {
-        this.retiradas = retiradas;
-    }
 }

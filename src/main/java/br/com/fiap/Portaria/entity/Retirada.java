@@ -1,9 +1,15 @@
 package br.com.fiap.Portaria.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "TPL_RETIRADA")
 public class Retirada {
@@ -22,43 +28,4 @@ public class Retirada {
     @JoinColumn(name = "ID_PORTARIA")
     private Portaria portaria;
 
-    public Integer getIdRetirada() {
-        return idRetirada;
-    }
-
-    public void setIdRetirada(Integer idRetirada) {
-        this.idRetirada = idRetirada;
-    }
-
-    public Date getDataRetirada() {
-        return dataRetirada;
-    }
-
-    public void setDataRetirada(Date dataRetirada) {
-        this.dataRetirada = dataRetirada;
-    }
-
-    public String getTokenRetirada() {
-        return tokenRetirada;
-    }
-
-    public void setTokenRetirada(String tokenRetirada) {
-        this.tokenRetirada = tokenRetirada;
-    }
-
-    public Morador getMorador() {
-        return morador;
-    }
-
-    public void setMorador(Morador morador) {
-        this.morador = morador;
-    }
-
-    public Portaria getPortaria() {
-        return portaria;
-    }
-
-    public void setPortaria(Portaria portaria) {
-        this.portaria = portaria;
-    }
 }

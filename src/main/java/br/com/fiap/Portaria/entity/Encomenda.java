@@ -1,9 +1,16 @@
 package br.com.fiap.Portaria.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "TPL_ENCOMENDA")
 public class Encomenda {
@@ -23,51 +30,15 @@ public class Encomenda {
     @JoinColumn(name = "ID_RETIRADA")
     private Retirada retirada;
 
-    public Integer getIdEncomenda() {
-        return idEncomenda;
-    }
+    @Column(name = "TOKEN_ENCOMENDA", unique = true)
+    private String tokenEncomenda;
 
-    public void setIdEncomenda(Integer idEncomenda) {
-        this.idEncomenda = idEncomenda;
-    }
+    private String origem;
 
-    public String getDescricao() {
-        return descricao;
-    }
+    @Column(name = "RETIRADA")
+    private Boolean foiRetirada = false;
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
+    @Column(name = "RETIRADA_EM")
+    private LocalDateTime retiradaEm;
 
-    public Date getDataRecebida() {
-        return dataRecebida;
-    }
-
-    public void setDataRecebida(Date dataRecebida) {
-        this.dataRecebida = dataRecebida;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Morador getMorador() {
-        return morador;
-    }
-
-    public void setMorador(Morador morador) {
-        this.morador = morador;
-    }
-
-    public Retirada getRetirada() {
-        return retirada;
-    }
-
-    public void setRetirada(Retirada retirada) {
-        this.retirada = retirada;
-    }
 }

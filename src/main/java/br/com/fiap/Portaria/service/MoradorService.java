@@ -39,35 +39,48 @@ public class MoradorService {
                 .map(this::toResponseDTO);
     }
 
-    public MoradorResponseDTO salvar(MoradorRequestDTO moradorRequestDTO) {
-        Morador morador = toEntity(moradorRequestDTO);
+    public MoradorResponseDTO salvar(MoradorRequestDTO dto) {
+        if (dto.getNome() == null || dto.getNome().isBlank()) {
+            throw new RuntimeException("Nome do morador é obrigatório");
+        }
+
+        Morador morador = new Morador();
+        morador.setNome(dto.getNome());
+        morador.setTelefone(dto.getTelefone());
+
+        if (dto.getApartamentoId() != null) {
+            Apartamento apartamento = apartamentoRepository.findById(dto.getApartamentoId())
+                    .orElseThrow(() -> new RuntimeException("Apartamento não encontrado"));
+            morador.setApartamento(apartamento);
+        }
 
         Integer proximoId = buscarProximoIdMorador();
         morador.setIdMorador(proximoId);
 
-        Morador moradorSalvo = moradorRepository.save(morador);
-        return toResponseDTO(moradorSalvo);
+        return toResponseDTO(moradorRepository.save(morador));
     }
 
-    public MoradorResponseDTO atualizar(Integer id, MoradorRequestDTO moradorRequestDTO) {
+    public MoradorResponseDTO atualizar(Integer id, MoradorRequestDTO dto) {
         return moradorRepository.findById(id)
                 .map(morador -> {
-                    morador.setNome(moradorRequestDTO.getNome());
-                    morador.setContato(moradorRequestDTO.getContato());
+                    if (dto.getNome() != null) morador.setNome(dto.getNome());
+                    if (dto.getTelefone() != null) morador.setTelefone(dto.getTelefone());
 
-                    if(moradorRequestDTO.getApartamentoId() != null) {
-                        Apartamento apartamento = apartamentoRepository.findById(moradorRequestDTO.getApartamentoId())
+                    if (dto.getApartamentoId() != null) {
+                        Apartamento apartamento = apartamentoRepository.findById(dto.getApartamentoId())
                                 .orElseThrow(() -> new RuntimeException("Apartamento não encontrado"));
                         morador.setApartamento(apartamento);
                     }
 
-                    Morador moradorSalvo = moradorRepository.save(morador);
-                    return toResponseDTO(moradorSalvo);
+                    return toResponseDTO(moradorRepository.save(morador));
                 })
                 .orElseThrow(() -> new RuntimeException("Morador não encontrado"));
     }
 
     public void deletar(Integer id) {
+        if (!moradorRepository.existsById(id)) {
+            throw new RuntimeException("Morador não encontrado");
+        }
         moradorRepository.deleteById(id);
     }
 
@@ -77,25 +90,20 @@ public class MoradorService {
     }
 
     private MoradorResponseDTO toResponseDTO(Morador morador) {
+        String bloco = null;
+        String numero = null;
+
+        if (morador.getApartamento() != null) {
+            bloco = morador.getApartamento().getBloco();
+            numero = morador.getApartamento().getNumero();
+        }
+
         return new MoradorResponseDTO(
                 morador.getIdMorador(),
                 morador.getNome(),
-                morador.getContato(),
-                morador.getApartamento() != null ? morador.getApartamento().getIdApartamento() : null
+                morador.getTelefone(),
+                bloco,
+                numero
         );
-    }
-
-    private Morador toEntity(MoradorRequestDTO dto) {
-        Morador morador = new Morador();
-        morador.setNome(dto.getNome());
-        morador.setContato(dto.getContato());
-
-        if(dto.getApartamentoId() != null){
-            Apartamento apartamento = apartamentoRepository.findById(dto.getApartamentoId())
-                    .orElseThrow(() -> new RuntimeException("Apartamento não encontrado"));
-            morador.setApartamento(apartamento);
-        }
-
-        return morador;
     }
 }

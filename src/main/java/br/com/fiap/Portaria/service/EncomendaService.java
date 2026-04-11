@@ -4,15 +4,14 @@ import br.com.fiap.Portaria.dto.EncomendaRequestDTO;
 import br.com.fiap.Portaria.dto.EncomendaResponseDTO;
 import br.com.fiap.Portaria.entity.Encomenda;
 import br.com.fiap.Portaria.entity.Morador;
-import br.com.fiap.Portaria.entity.Retirada;
 import br.com.fiap.Portaria.repository.EncomendaRepository;
 import br.com.fiap.Portaria.repository.MoradorRepository;
-import br.com.fiap.Portaria.repository.RetiradaRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,10 +26,10 @@ public class EncomendaService {
     private MoradorRepository moradorRepository;
 
     @Autowired
-    private RetiradaRepository retiradaRepository;
+    private EntityManager entityManager;
 
     @Autowired
-    private EntityManager entityManager;
+    private EncomendaProducer encomendaProducer;
 
     public List<EncomendaResponseDTO> listarTodas() {
         return encomendaRepository.findAll()
@@ -44,42 +43,63 @@ public class EncomendaService {
                 .map(this::toResponseDTO);
     }
 
-    public EncomendaResponseDTO salvar(EncomendaRequestDTO encomendaRequestDTO) {
-        Encomenda encomenda = toEntity(encomendaRequestDTO);
+    public EncomendaResponseDTO buscarPorToken(String token) {
+        Encomenda encomenda = encomendaRepository.findByTokenEncomenda(token)
+                .orElseThrow(() -> new RuntimeException("Encomenda não encontrada para o token: " + token));
+        return toResponseDTO(encomenda);
+    }
+
+    public EncomendaResponseDTO salvar(EncomendaRequestDTO dto) {
+        if (dto.getDescricao() == null || dto.getDescricao().isBlank()) {
+            throw new RuntimeException("Descrição da encomenda é obrigatória");
+        }
+        if (dto.getMoradorId() == null) {
+            throw new RuntimeException("Morador é obrigatório para registrar encomenda");
+        }
+
+        Encomenda encomenda = new Encomenda();
+        encomenda.setDescricao(dto.getDescricao());
+        encomenda.setOrigem(dto.getOrigem());
+        encomenda.setFoiRetirada(false);
+        encomenda.setTokenEncomenda(gerarToken());
+        encomenda.setDataRecebida(new Date());
+
+        Morador morador = moradorRepository.findById(dto.getMoradorId())
+                .orElseThrow(() -> new RuntimeException("Morador não encontrado"));
+        encomenda.setMorador(morador);
 
         Integer proximoId = buscarProximoIdEncomenda();
         encomenda.setIdEncomenda(proximoId);
 
-        Encomenda encomendaSalva = encomendaRepository.save(encomenda);
-        return toResponseDTO(encomendaSalva);
+        Encomenda salva = encomendaRepository.save(encomenda);
+        encomendaProducer.notificarEncomendaRecebida(
+                "Nova encomenda recebida: " + salva.getDescricao() +
+                        " | Morador ID: " + salva.getMorador().getIdMorador()
+        );
+        return toResponseDTO(salva);
     }
 
-    public EncomendaResponseDTO atualizar(Integer id, EncomendaRequestDTO encomendaRequestDTO) {
+    public EncomendaResponseDTO atualizar(Integer id, EncomendaRequestDTO dto) {
         return encomendaRepository.findById(id)
                 .map(encomenda -> {
-                    encomenda.setDescricao(encomendaRequestDTO.getDescricao());
-                    encomenda.setDataRecebida(encomendaRequestDTO.getDataRecebida());
-                    encomenda.setStatus(encomendaRequestDTO.getStatus());
+                    if (dto.getDescricao() != null) encomenda.setDescricao(dto.getDescricao());
+                    if (dto.getOrigem() != null) encomenda.setOrigem(dto.getOrigem());
 
-                    if (encomendaRequestDTO.getMoradorId() != null) {
-                        Morador morador = moradorRepository.findById(encomendaRequestDTO.getMoradorId())
+                    if (dto.getMoradorId() != null) {
+                        Morador morador = moradorRepository.findById(dto.getMoradorId())
                                 .orElseThrow(() -> new RuntimeException("Morador não encontrado"));
                         encomenda.setMorador(morador);
                     }
 
-                    if (encomendaRequestDTO.getRetiradaId() != null) {
-                        Retirada retirada = retiradaRepository.findById(encomendaRequestDTO.getRetiradaId())
-                                .orElseThrow(()-> new RuntimeException("Requisição de retirada não encontrada"));
-                        encomenda.setRetirada(retirada);
-                    }
-
-                    Encomenda encomendaAtualizada = encomendaRepository.save(encomenda);
-                    return toResponseDTO(encomendaAtualizada);
+                    return toResponseDTO(encomendaRepository.save(encomenda));
                 })
                 .orElseThrow(() -> new RuntimeException("Encomenda não encontrada"));
     }
 
     public void deletar(Integer id) {
+        if (!encomendaRepository.existsById(id)) {
+            throw new RuntimeException("Encomenda não encontrada");
+        }
         encomendaRepository.deleteById(id);
     }
 
@@ -88,35 +108,31 @@ public class EncomendaService {
         return ((Number) query.getSingleResult()).intValue();
     }
 
-    private EncomendaResponseDTO toResponseDTO(Encomenda encomenda) {
-        return new EncomendaResponseDTO(
-                encomenda.getIdEncomenda(),
-                encomenda.getDescricao(),
-                encomenda.getDataRecebida(),
-                encomenda.getStatus(),
-                encomenda.getMorador() != null ? encomenda.getMorador().getIdMorador() : null,
-                encomenda.getRetirada() != null ? encomenda.getRetirada().getIdRetirada() : null
-        );
+    private String gerarToken() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder token = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+        for (int i = 0; i < 5; i++) {
+            token.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return token.toString();
     }
 
-    private Encomenda toEntity(EncomendaRequestDTO dto) {
-        Encomenda encomenda = new Encomenda();
-        encomenda.setDescricao(dto.getDescricao());
-        encomenda.setDataRecebida(dto.getDataRecebida());
-        encomenda.setStatus(dto.getStatus());
-
-        if (dto.getMoradorId() != null) {
-            Morador morador = moradorRepository.findById(dto.getMoradorId())
-                    .orElseThrow(() -> new RuntimeException("Morador não encontrado"));
-            encomenda.setMorador(morador);
+    private EncomendaResponseDTO toResponseDTO(Encomenda encomenda) {
+        EncomendaResponseDTO.MoradorResumoDTO moradorResumo = null;
+        if (encomenda.getMorador() != null) {
+            moradorResumo = new EncomendaResponseDTO.MoradorResumoDTO(
+                    encomenda.getMorador().getIdMorador(),
+                    encomenda.getMorador().getNome()
+            );
         }
-
-        if (dto.getRetiradaId() != null) {
-            Retirada retirada = retiradaRepository.findById(dto.getRetiradaId())
-                    .orElseThrow(() -> new RuntimeException("Solicitação de retirada não encontrada"));
-            encomenda.setRetirada(retirada);
-        }
-
-        return encomenda;
+        return new EncomendaResponseDTO(
+                encomenda.getIdEncomenda(),
+                encomenda.getTokenEncomenda(),
+                encomenda.getOrigem(),
+                encomenda.getDescricao(),
+                encomenda.getFoiRetirada(),
+                moradorResumo
+        );
     }
 }
