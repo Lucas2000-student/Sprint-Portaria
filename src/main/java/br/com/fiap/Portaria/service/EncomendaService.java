@@ -1,5 +1,6 @@
 package br.com.fiap.Portaria.service;
 
+import br.com.fiap.Portaria.client.MLClient;
 import br.com.fiap.Portaria.dto.EncomendaRequestDTO;
 import br.com.fiap.Portaria.dto.EncomendaResponseDTO;
 import br.com.fiap.Portaria.entity.*;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,6 +40,9 @@ public class EncomendaService {
     @Autowired
     private PortariaRepository portariaRepository;
 
+    @Autowired
+    private MLClient mlClient;
+
     public List<EncomendaResponseDTO> listarTodas() {
         return encomendaRepository.findAll()
                 .stream()
@@ -57,59 +62,23 @@ public class EncomendaService {
     }
 
     public EncomendaResponseDTO salvar(EncomendaRequestDTO dto, String email) {
-        if (dto.getDescricao() == null || dto.getDescricao().isBlank()) {
-            throw new RuntimeException("Descrição da encomenda é obrigatória");
-        }
-        if (dto.getMoradorId() == null) {
-            throw new RuntimeException("Morador é obrigatório para registrar encomenda");
-        }
+        validarDados(dto);
 
-        Encomenda encomenda = new Encomenda();
-        encomenda.setDescricao(dto.getDescricao());
-        encomenda.setOrigem(dto.getOrigem());
-        encomenda.setFoiRetirada(false);
-        encomenda.setTokenEncomenda(gerarToken());
-        encomenda.setDataRecebida(new Date());
+        Encomenda encomenda = montarEncomenda(dto);
+        Portaria portaria = resolverPortaria(email);
 
-        Morador morador = moradorRepository.findById(dto.getMoradorId())
-                .orElseThrow(() -> new RuntimeException("Morador não encontrado"));
-        encomenda.setMorador(morador);
-
-        Integer proximoId = buscarProximoIdEncomenda();
-        encomenda.setIdEncomenda(proximoId);
-
-        // busca o usuário logado pra pegar a portaria
-        Usuario usuarioLogado = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        // define a portaria — porteiro usa a dele
-        Portaria portaria;
-        if (usuarioLogado.getIdPortaria() != null) {
-            portaria = portariaRepository.findById(usuarioLogado.getIdPortaria())
-                    .orElseThrow(() -> new RuntimeException("Portaria não encontrada"));
-        } else {
-            portaria = portariaRepository.findById(1)
-                    .orElseThrow(() -> new RuntimeException("Portaria padrão não encontrada"));
-        }
-
-        // cria retirada pendente
-        Retirada retiradaPendente = new Retirada();
-        Integer proximoIdRetirada = ((Number) entityManager
-                .createNativeQuery("SELECT NVL(MAX(ID_RETIRADA), 0) + 1 FROM TPL_RETIRADA")
-                .getSingleResult()).intValue();
-        retiradaPendente.setIdRetirada(proximoIdRetirada);
-        retiradaPendente.setTokenRetirada(encomenda.getTokenEncomenda());
-        retiradaPendente.setMorador(morador);
-        retiradaPendente.setPortaria(portaria);
-
-        Retirada retiradaSalva = retiradaRepository.save(retiradaPendente);
+        Retirada retiradaSalva = criarRetiradaPendente(encomenda, portaria);
         encomenda.setRetirada(retiradaSalva);
 
         Encomenda salva = encomendaRepository.save(encomenda);
+
         encomendaProducer.notificarEncomendaRecebida(
                 "Nova encomenda recebida: " + salva.getDescricao() +
                         " | Morador ID: " + salva.getMorador().getIdMorador()
         );
+
+        preverTempoRetirada();
+
         return toResponseDTO(salva);
     }
 
@@ -169,4 +138,70 @@ public class EncomendaService {
                 moradorResumo
         );
     }
+
+    private void validarDados(EncomendaRequestDTO dto) {
+        if (dto.getDescricao() == null || dto.getDescricao().isBlank()) {
+            throw new RuntimeException("Descrição da encomenda é obrigatória");
+        }
+        if (dto.getMoradorId() == null) {
+            throw new RuntimeException("Morador é obrigatório para registrar encomenda");
+        }
+    }
+
+    private Encomenda montarEncomenda(EncomendaRequestDTO dto) {
+        Encomenda encomenda = new Encomenda();
+        encomenda.setDescricao(dto.getDescricao());
+        encomenda.setOrigem(dto.getOrigem());
+        encomenda.setFoiRetirada(false);
+        encomenda.setTokenEncomenda(gerarToken());
+        encomenda.setDataRecebida(new Date());
+
+        Morador morador = moradorRepository.findById(dto.getMoradorId())
+                .orElseThrow(() -> new RuntimeException("Morador não encontrado"));
+        encomenda.setMorador(morador);
+
+        Integer proximoId = buscarProximoIdEncomenda();
+        encomenda.setIdEncomenda(proximoId);
+
+        return encomenda;
+    }
+
+    private Portaria resolverPortaria(String email) {
+        Usuario usuarioLogado = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (usuarioLogado.getIdPortaria() != null) {
+            return portariaRepository.findById(usuarioLogado.getIdPortaria())
+                    .orElseThrow(() -> new RuntimeException("Portaria não encontrada"));
+        }
+        return portariaRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Portaria padrão não encontrada"));
+    }
+
+    private Retirada criarRetiradaPendente(Encomenda encomenda, Portaria portaria) {
+        Retirada retirada = new Retirada();
+        Integer proximoId = ((Number) entityManager
+                .createNativeQuery("SELECT NVL(MAX(ID_RETIRADA), 0) + 1 FROM TPL_RETIRADA")
+                .getSingleResult()).intValue();
+        retirada.setIdRetirada(proximoId);
+        retirada.setTokenRetirada(encomenda.getTokenEncomenda());
+        retirada.setMorador(encomenda.getMorador());
+        retirada.setPortaria(portaria);
+        return retiradaRepository.save(retirada);
+    }
+
+    private void preverTempoRetirada() {
+        Map<String, Object> dadosML = Map.of(
+                "weight_in_gms", 2000,
+                "cost_of_the_product", 150,
+                "discount_offered", 10,
+                "prior_purchases", 3,
+                "customer_care_calls", 2,
+                "mode_of_shipment", 1,
+                "product_importance", 1
+        );
+        Map<String, Object> predicao = mlClient.predict(dadosML);
+        System.out.println("Previsão de retirada: " + predicao.get("predicao"));
+    }
+
 }
