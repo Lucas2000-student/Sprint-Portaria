@@ -281,6 +281,10 @@ Morador chega na portaria e fala o token
 - ✅ Validações nos serviços de criação e atualização
 - ✅ Procedures Oracle para operações críticas
 
+## Api em produção!
+
+[Clique aqui para ver o Swagger em prod](http://portaria-app.hrgjf6h8amccbhf7.brazilsouth.azurecontainer.io:8080/swagger-ui/index.html)
+
 ## 🎥 Vídeo de Apresentação
 
-[📹 Assista ao vídeo](https://youtu.be/jH_lAsU8PXg)
+[📹 Assista ao vídeo](https://youtu.be/kACIFiRpM1s)
