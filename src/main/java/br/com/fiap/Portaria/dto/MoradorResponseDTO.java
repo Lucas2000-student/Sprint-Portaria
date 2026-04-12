@@ -11,6 +11,7 @@ public class MoradorResponseDTO {
     private Integer id;
     private String nome;
     private String telefone;
+    private String email;
     private String bloco;
     private String apartamento;
 }

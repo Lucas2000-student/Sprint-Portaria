@@ -1,6 +1,5 @@
 package br.com.fiap.Portaria.entity;
 
-import br.com.fiap.Portaria.dto.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,30 +16,21 @@ import java.util.List;
 public class Morador {
 
     @Id
+    @Column(name = "ID_MORADOR")
     private Integer idMorador;
 
     private String nome;
-    private String contato;
+    private String email;
+    private String telefone;
 
     @ManyToOne
     @JoinColumn(name = "ID_APARTAMENTO")
     private Apartamento apartamento;
 
     @OneToMany(mappedBy = "morador")
-    private List<Encomenda> encomendas;
+    private List<Encomenda> encomendas = new ArrayList<>();
 
     @OneToMany(mappedBy = "morador")
-    private List<Retirada> retiradas;
-
-    @Column(unique = true)
-    private String email;
-
-    @Enumerated(EnumType.STRING)
-    private Role role; // ADMIN ou MORADOR
-
-    @Column(name = "FIREBASE_UID", unique = true)
-    private String firebaseUid;
-
-    private String telefone;
+    private List<Retirada> retiradas = new ArrayList<>();
 
 }

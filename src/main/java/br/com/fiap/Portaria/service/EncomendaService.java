@@ -2,10 +2,8 @@ package br.com.fiap.Portaria.service;
 
 import br.com.fiap.Portaria.dto.EncomendaRequestDTO;
 import br.com.fiap.Portaria.dto.EncomendaResponseDTO;
-import br.com.fiap.Portaria.entity.Encomenda;
-import br.com.fiap.Portaria.entity.Morador;
-import br.com.fiap.Portaria.repository.EncomendaRepository;
-import br.com.fiap.Portaria.repository.MoradorRepository;
+import br.com.fiap.Portaria.entity.*;
+import br.com.fiap.Portaria.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,15 @@ public class EncomendaService {
     @Autowired
     private EncomendaProducer encomendaProducer;
 
+    @Autowired
+    private RetiradaRepository retiradaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PortariaRepository portariaRepository;
+
     public List<EncomendaResponseDTO> listarTodas() {
         return encomendaRepository.findAll()
                 .stream()
@@ -49,7 +56,7 @@ public class EncomendaService {
         return toResponseDTO(encomenda);
     }
 
-    public EncomendaResponseDTO salvar(EncomendaRequestDTO dto) {
+    public EncomendaResponseDTO salvar(EncomendaRequestDTO dto, String email) {
         if (dto.getDescricao() == null || dto.getDescricao().isBlank()) {
             throw new RuntimeException("Descrição da encomenda é obrigatória");
         }
@@ -70,6 +77,33 @@ public class EncomendaService {
 
         Integer proximoId = buscarProximoIdEncomenda();
         encomenda.setIdEncomenda(proximoId);
+
+        // busca o usuário logado pra pegar a portaria
+        Usuario usuarioLogado = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // define a portaria — porteiro usa a dele
+        Portaria portaria;
+        if (usuarioLogado.getIdPortaria() != null) {
+            portaria = portariaRepository.findById(usuarioLogado.getIdPortaria())
+                    .orElseThrow(() -> new RuntimeException("Portaria não encontrada"));
+        } else {
+            portaria = portariaRepository.findById(1)
+                    .orElseThrow(() -> new RuntimeException("Portaria padrão não encontrada"));
+        }
+
+        // cria retirada pendente
+        Retirada retiradaPendente = new Retirada();
+        Integer proximoIdRetirada = ((Number) entityManager
+                .createNativeQuery("SELECT NVL(MAX(ID_RETIRADA), 0) + 1 FROM TPL_RETIRADA")
+                .getSingleResult()).intValue();
+        retiradaPendente.setIdRetirada(proximoIdRetirada);
+        retiradaPendente.setTokenRetirada(encomenda.getTokenEncomenda());
+        retiradaPendente.setMorador(morador);
+        retiradaPendente.setPortaria(portaria);
+
+        Retirada retiradaSalva = retiradaRepository.save(retiradaPendente);
+        encomenda.setRetirada(retiradaSalva);
 
         Encomenda salva = encomendaRepository.save(encomenda);
         encomendaProducer.notificarEncomendaRecebida(

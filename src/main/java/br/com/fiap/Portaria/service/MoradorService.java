@@ -47,6 +47,7 @@ public class MoradorService {
         Morador morador = new Morador();
         morador.setNome(dto.getNome());
         morador.setTelefone(dto.getTelefone());
+        morador.setEmail(dto.getEmail());
 
         if (dto.getApartamentoId() != null) {
             Apartamento apartamento = apartamentoRepository.findById(dto.getApartamentoId())
@@ -65,6 +66,7 @@ public class MoradorService {
                 .map(morador -> {
                     if (dto.getNome() != null) morador.setNome(dto.getNome());
                     if (dto.getTelefone() != null) morador.setTelefone(dto.getTelefone());
+                    if (dto.getEmail() != null) morador.setEmail(dto.getEmail());
 
                     if (dto.getApartamentoId() != null) {
                         Apartamento apartamento = apartamentoRepository.findById(dto.getApartamentoId())
@@ -102,6 +104,7 @@ public class MoradorService {
                 morador.getIdMorador(),
                 morador.getNome(),
                 morador.getTelefone(),
+                morador.getEmail(),
                 bloco,
                 numero
         );

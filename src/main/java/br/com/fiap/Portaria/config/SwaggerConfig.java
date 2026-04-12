@@ -17,7 +17,10 @@ import org.springframework.context.annotation.Configuration;
                 description = "API para gerenciamento de portaria de condomínio",
                 contact = @Contact(name = "Portaria", email = "rm560179@fiap.com.br")
         ),
-        servers = {@Server(url = "http://localhost:8080", description = "LOCAL")},
+        servers = {
+                @Server(url = "http://localhost:8080", description = "LOCAL"),
+                @Server(url = "http://portaria-app.hrgjf6h8amccbhf7.brazilsouth.azurecontainer.io:8080", description = "AZURE")
+        },
         tags = {@Tag(name = "Portaria", description = "Sistema de entregas de encomendas")}
 )
 @SecurityScheme(

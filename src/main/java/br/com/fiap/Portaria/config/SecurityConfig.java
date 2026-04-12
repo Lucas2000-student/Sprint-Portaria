@@ -28,19 +28,16 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // rotas públicas
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                        // só ADMIN pode criar/atualizar/deletar
-                        .requestMatchers(HttpMethod.POST, "/moradores/**", "/apartamentos/**",
-                                "/encomendas/**", "/portarias/**", "/retiradas/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
+                        // ADMIN pode tudo
+                        .requestMatchers(HttpMethod.POST, "/moradores/**", "/encomendas/**", "/retiradas/**").hasAnyRole("ADMIN", "PORTEIRO")
+                        .requestMatchers(HttpMethod.PUT, "/**").hasAnyRole("ADMIN", "PORTEIRO")
                         .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
 
                         // MORADOR só lê
-                        .requestMatchers(HttpMethod.GET, "/encomendas/**").hasAnyRole("ADMIN", "MORADOR")
-                        .requestMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "MORADOR")
+                        .requestMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "PORTEIRO", "MORADOR")
 
                         .anyRequest().authenticated()
                 )

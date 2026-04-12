@@ -3,19 +3,15 @@ package br.com.fiap.Portaria.service;
 import br.com.fiap.Portaria.dto.RetiradaRequestDTO;
 import br.com.fiap.Portaria.dto.RetiradaResponseDTO;
 import br.com.fiap.Portaria.entity.Encomenda;
-import br.com.fiap.Portaria.entity.Morador;
 import br.com.fiap.Portaria.entity.Retirada;
 import br.com.fiap.Portaria.repository.EncomendaRepository;
-import br.com.fiap.Portaria.repository.MoradorRepository;
 import br.com.fiap.Portaria.repository.RetiradaRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Date;
 
 @Service
 public class RetiradaService {
@@ -25,9 +21,6 @@ public class RetiradaService {
 
     @Autowired
     private EncomendaRepository encomendaRepository;
-
-    @Autowired
-    private MoradorRepository moradorRepository;
 
     @Autowired
     private RetiradaProducer retiradaProducer;
@@ -45,31 +38,23 @@ public class RetiradaService {
             throw new RuntimeException("Encomenda já foi retirada");
         }
 
+        // atualiza a retirada pendente que já existe
+        Retirada retirada = encomenda.getRetirada();
+        retirada.setDataRetirada(new Date());
+        retirada.setMorador(encomenda.getMorador());
+        retiradaRepository.save(retirada);
+
         // atualiza status da encomenda
         encomenda.setFoiRetirada(true);
         encomenda.setRetiradaEm(LocalDateTime.now());
         encomendaRepository.save(encomenda);
 
-        // cria o registro de retirada
-        Retirada retirada = new Retirada();
-        retirada.setIdRetirada(buscarProximoIdRetirada());
-        retirada.setDataRetirada(new java.util.Date());
-        retirada.setTokenRetirada(dto.getEncomenda());
-        retirada.setMorador(encomenda.getMorador());
-
-        Retirada salva = retiradaRepository.save(retirada);
-
         retiradaProducer.notificarRetiradaRealizada(
-                "Retirada realizada | MoradorID: " + salva.getMorador().getIdMorador() +
+                "Retirada realizada | MoradorID: " + encomenda.getMorador().getIdMorador() +
                         " | EncomendaID: " + encomenda.getIdEncomenda()
         );
 
-        return toResponseDTO(salva, encomenda);
-    }
-
-    private Integer buscarProximoIdRetirada() {
-        Query query = entityManager.createNativeQuery("SELECT NVL(MAX(ID_RETIRADA), 0) + 1 FROM TPL_RETIRADA");
-        return ((Number) query.getSingleResult()).intValue();
+        return toResponseDTO(retirada, encomenda);
     }
 
     private RetiradaResponseDTO toResponseDTO(Retirada retirada, Encomenda encomenda) {

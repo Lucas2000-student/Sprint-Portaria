@@ -9,6 +9,4 @@ import java.util.Optional;
 @Repository
 public interface MoradorRepository extends JpaRepository<Morador, Integer> {
     Optional<Morador> findByEmail(String email);
-
-    Optional<Morador> findByFirebaseUid(String firebaseUid);
 }

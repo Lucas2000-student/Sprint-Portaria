@@ -2,16 +2,13 @@ package br.com.fiap.Portaria.controller;
 
 import br.com.fiap.Portaria.dto.FirebaseLoginRequestDTO;
 import br.com.fiap.Portaria.dto.FirebaseRegisterRequestDTO;
-import br.com.fiap.Portaria.dto.enums.Role;
-import br.com.fiap.Portaria.entity.Morador;
-import br.com.fiap.Portaria.repository.MoradorRepository;
+import br.com.fiap.Portaria.entity.Usuario;
+import br.com.fiap.Portaria.repository.UsuarioRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,88 +22,85 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-    private MoradorRepository moradorRepository;
-
-    @Autowired
-    private EntityManager entityManager;
+    private UsuarioRepository usuarioRepository;
 
     @Operation(summary = "Login com Firebase", description = "Envia o idToken do Firebase e recebe os dados do usuário autenticado")
     @ApiResponse(responseCode = "200", description = "Login realizado com sucesso")
     @ApiResponse(responseCode = "401", description = "Token Firebase inválido")
-    @ApiResponse(responseCode = "404", description = "Morador não cadastrado no sistema")
+    @ApiResponse(responseCode = "404", description = "Email não cadastrado no sistema")
     @PostMapping("/firebase-login")
     public ResponseEntity<?> firebaseLogin(@RequestBody FirebaseLoginRequestDTO body) {
         try {
-            String idToken = body.getToken();
-            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
-
-            String uid = firebaseToken.getUid();
+            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(body.getToken());
             String email = firebaseToken.getEmail();
+            String uid = firebaseToken.getUid();
 
-            Optional<Morador> moradorOpt = moradorRepository.findByFirebaseUid(uid);
-
-            if (moradorOpt.isEmpty()) {
-                return ResponseEntity.status(404).body(Map.of("erro", "Morador não cadastrado"));
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+            if (usuarioOpt.isEmpty()) {
+                return ResponseEntity.status(404).body(Map.of("erro", "Email não cadastrado no sistema"));
             }
 
-            Morador morador = moradorOpt.get();
+            Usuario usuario = usuarioOpt.get();
+
+            // vincula o firebaseUid se ainda não tiver
+            if (usuario.getFirebaseUid() == null) {
+                usuario.setFirebaseUid(uid);
+                usuarioRepository.save(usuario);
+            }
 
             return ResponseEntity.ok(Map.of(
                     "uid", uid,
                     "email", email,
                     "user", Map.of(
-                            "id", morador.getIdMorador(),
-                            "nome", morador.getNome(),
-                            "role", morador.getRole().name()
+                            "id", usuario.getIdUsuario(),
+                            "perfil", usuario.getPerfil().name(),
+                            "idMorador", usuario.getIdMorador() != null ? usuario.getIdMorador() : "",
+                            "idPortaria", usuario.getIdPortaria() != null ? usuario.getIdPortaria() : ""
                     )
             ));
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("erro", "Token inválido"));
+            return ResponseEntity.status(401).body(Map.of("erro", "Token Firebase inválido"));
         }
     }
 
-    @Operation(summary = "Registro com Firebase", description = "Envia o idToken do Firebase e o nome. Cria o morador com role MORADOR automaticamente")
-    @ApiResponse(responseCode = "201", description = "Morador cadastrado com sucesso")
-    @ApiResponse(responseCode = "400", description = "Usuário já cadastrado")
+    @Operation(summary = "Registro com Firebase", description = "Primeiro acesso — verifica se email existe no sistema e vincula o Firebase UID")
+    @ApiResponse(responseCode = "200", description = "Conta vinculada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Conta já foi ativada anteriormente")
     @ApiResponse(responseCode = "401", description = "Token Firebase inválido")
+    @ApiResponse(responseCode = "404", description = "Email não cadastrado no sistema")
     @PostMapping("/firebase-register")
     public ResponseEntity<?> firebaseRegister(@RequestBody FirebaseRegisterRequestDTO body) {
         try {
-            String idToken = body.getToken();
-            String nome = body.getNome();
-
-            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
-            String uid = firebaseToken.getUid();
+            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(body.getToken());
             String email = firebaseToken.getEmail();
+            String uid = firebaseToken.getUid();
 
-            // verifica se já existe
-            if (moradorRepository.findByFirebaseUid(uid).isPresent()) {
-                return ResponseEntity.badRequest().body(Map.of("erro", "Usuário já cadastrado"));
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+            if (usuarioOpt.isEmpty()) {
+                return ResponseEntity.status(404).body(Map.of("erro", "Email não cadastrado no sistema — solicite ao administrador"));
             }
 
-            Morador morador = new Morador();
-            morador.setNome(nome);
-            morador.setContato(email);
-            morador.setFirebaseUid(uid);
-            morador.setRole(Role.MORADOR);
+            Usuario usuario = usuarioOpt.get();
 
-            Query query = entityManager.createNativeQuery("SELECT NVL(MAX(ID_MORADOR), 0) + 1 FROM TPL_MORADOR");
-            Integer proximoId = ((Number) query.getSingleResult()).intValue();
-            morador.setIdMorador(proximoId);
+            if (usuario.getFirebaseUid() != null) {
+                return ResponseEntity.badRequest().body(Map.of("erro", "Conta já foi ativada anteriormente"));
+            }
 
-            moradorRepository.save(morador);
+            usuario.setFirebaseUid(uid);
+            usuarioRepository.save(usuario);
 
-            return ResponseEntity.status(201).body(Map.of(
+            return ResponseEntity.ok(Map.of(
                     "uid", uid,
                     "email", email,
                     "user", Map.of(
-                            "id", morador.getIdMorador(),
-                            "nome", morador.getNome(),
-                            "role", morador.getRole().name()
+                            "id", usuario.getIdUsuario(),
+                            "perfil", usuario.getPerfil().name(),
+                            "idMorador", usuario.getIdMorador() != null ? usuario.getIdMorador() : "",
+                            "idPortaria", usuario.getIdPortaria() != null ? usuario.getIdPortaria() : ""
                     )
             ));
         } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("erro", "Token inválido"));
+            return ResponseEntity.status(401).body(Map.of("erro", "Token Firebase inválido"));
         }
     }
 }

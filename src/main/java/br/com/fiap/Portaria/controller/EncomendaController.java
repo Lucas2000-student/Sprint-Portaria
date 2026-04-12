@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,9 +46,10 @@ public class EncomendaController {
     @ApiResponse(responseCode = "201", description = "Encomenda criada com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
     @PostMapping
-    public ResponseEntity<EncomendaResponseDTO> criar(@RequestBody EncomendaRequestDTO dto) {
+    public ResponseEntity<EncomendaResponseDTO> criar(@RequestBody EncomendaRequestDTO dto,
+                                                      @AuthenticationPrincipal String email) {
         try {
-            return ResponseEntity.status(201).body(encomendaService.salvar(dto));
+            return ResponseEntity.status(201).body(encomendaService.salvar(dto, email));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
