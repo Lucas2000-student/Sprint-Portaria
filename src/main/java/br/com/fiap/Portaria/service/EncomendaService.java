@@ -10,10 +10,7 @@ import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -191,14 +188,15 @@ public class EncomendaService {
     }
 
     private void preverTempoRetirada() {
+        Random random = new Random();
         Map<String, Object> dadosML = Map.of(
-                "weight_in_gms", 2000,
-                "cost_of_the_product", 150,
-                "discount_offered", 10,
-                "prior_purchases", 3,
-                "customer_care_calls", 2,
-                "mode_of_shipment", 1,
-                "product_importance", 1
+                "weight_in_gms", 500 + random.nextInt(5000),
+                "cost_of_the_product", 50 + random.nextInt(500),
+                "discount_offered", random.nextInt(70),
+                "prior_purchases", 1 + random.nextInt(7),
+                "customer_care_calls", random.nextInt(7),
+                "mode_of_shipment", random.nextInt(3),
+                "product_importance", random.nextInt(3)
         );
         Map<String, Object> predicao = mlClient.predict(dadosML);
         System.out.println("Previsão de retirada: " + predicao.get("predicao"));
