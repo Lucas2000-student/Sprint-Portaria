@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name = "ml-client", url = "http://localhost:8001")
+@FeignClient(name = "ml-client", url = "${URL_ML}")
 public interface MLClient {
 
     @PostMapping("/predict")
