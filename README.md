@@ -287,4 +287,4 @@ Morador chega na portaria e fala o token
 
 ## 🎥 Vídeo de Apresentação
 
-[📹 Assista ao vídeo](https://youtu.be/kACIFiRpM1s)
+[📹 Assista ao vídeo](https://www.youtube.com/watch?v=yfvsxRm11hQ)
